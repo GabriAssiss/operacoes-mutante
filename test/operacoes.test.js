@@ -74,3 +74,130 @@ describe('Suíte de Testes Fraca para 50 Operações Aritméticas', () => {
   test('49. deve calcular o triplo de um número', () => { expect(triplo(10)).toBe(30); });
   test('50. deve calcular a metade de um número', () => { expect(metade(20)).toBe(10); });
 });
+
+// =====================================================================
+// Testes adicionados para matar os mutantes sobreviventes do StrykerJS
+// =====================================================================
+describe('Testes Reforçados (Teste de Mutação)', () => {
+  // --- Mensagens de erro: matam mutantes StringLiteral ("" no lugar da mensagem)
+  test('divisao: lança erro com a mensagem exata', () => {
+    expect(() => divisao(5, 0)).toThrow('Divisão por zero não é permitida.');
+  });
+
+  // --- raizQuadrada: fronteira n < 0
+  test('raizQuadrada: lança erro para número negativo', () => {
+    expect(() => raizQuadrada(-1)).toThrow('Não é possível calcular a raiz quadrada de um número negativo.');
+  });
+  test('raizQuadrada: aceita zero (fronteira de n < 0)', () => {
+    expect(raizQuadrada(0)).toBe(0);
+  });
+
+  // --- fatorial: fronteira n < 0 e casos base
+  test('fatorial: lança erro para número negativo', () => {
+    expect(() => fatorial(-1)).toThrow('Fatorial não é definido para números negativos.');
+  });
+  test('fatorial: casos base 0 e 1', () => {
+    expect(fatorial(0)).toBe(1);
+    expect(fatorial(1)).toBe(1);
+  });
+
+  // --- mediaArray: array vazio
+  test('mediaArray: retorna 0 para array vazio', () => {
+    expect(mediaArray([])).toBe(0);
+  });
+
+  // --- maximoArray / minimoArray: array vazio
+  test('maximoArray: lança erro para array vazio', () => {
+    expect(() => maximoArray([])).toThrow('Array vazio не possui valor máximo.');
+  });
+  test('minimoArray: lança erro para array vazio', () => {
+    expect(() => minimoArray([])).toThrow('Array vazio не possui valor mínimo.');
+  });
+
+  // --- isPar / isImpar: testar também o resultado false
+  test('isPar: retorna false para número ímpar', () => {
+    expect(isPar(7)).toBe(false);
+  });
+  test('isImpar: retorna false para número par', () => {
+    expect(isImpar(4)).toBe(false);
+  });
+
+  // --- isPrimo: fronteiras e números compostos
+  test('isPrimo: 0, 1 e negativos não são primos', () => {
+    expect(isPrimo(1)).toBe(false);
+    expect(isPrimo(0)).toBe(false);
+    expect(isPrimo(-7)).toBe(false);
+  });
+  test('isPrimo: 2 é primo', () => {
+    expect(isPrimo(2)).toBe(true);
+  });
+  test('isPrimo: números compostos não são primos', () => {
+    expect(isPrimo(4)).toBe(false);
+    expect(isPrimo(9)).toBe(false);
+    expect(isPrimo(25)).toBe(false);
+  });
+
+  // --- clamp: valores abaixo/acima do intervalo e fronteiras
+  test('clamp: valor abaixo do mínimo retorna o mínimo', () => {
+    expect(clamp(-5, 0, 10)).toBe(0);
+  });
+  test('clamp: valor acima do máximo retorna o máximo', () => {
+    expect(clamp(15, 0, 10)).toBe(10);
+  });
+  test('clamp: valor igual às fronteiras é retornado sem alteração', () => {
+    // toBe usa Object.is, que diferencia -0 de 0: só o operador estrito (< e >)
+    // devolve o próprio valor quando ele é igual à fronteira.
+    expect(clamp(-0, 0, 10)).toBe(-0);
+    expect(clamp(0, -10, -0)).toBe(0);
+  });
+
+  // --- isDivisivel: caso falso
+  test('isDivisivel: retorna false quando não é divisível', () => {
+    expect(isDivisivel(10, 3)).toBe(false);
+  });
+
+  // --- Conversões de temperatura: valores que não anulam a multiplicação
+  test('celsiusParaFahrenheit: 100 °C = 212 °F', () => {
+    expect(celsiusParaFahrenheit(100)).toBe(212);
+  });
+  test('fahrenheitParaCelsius: 212 °F = 100 °C', () => {
+    expect(fahrenheitParaCelsius(212)).toBe(100);
+  });
+
+  // --- inverso: zero
+  test('inverso: lança erro para zero', () => {
+    expect(() => inverso(0)).toThrow('Não é possível inverter o número zero.');
+  });
+
+  // --- Comparações: casos de igualdade e resultado false
+  test('isMaiorQue: false quando iguais ou menor', () => {
+    expect(isMaiorQue(5, 5)).toBe(false);
+    expect(isMaiorQue(4, 5)).toBe(false);
+  });
+  test('isMenorQue: false quando iguais ou maior', () => {
+    expect(isMenorQue(5, 5)).toBe(false);
+    expect(isMenorQue(6, 5)).toBe(false);
+  });
+  test('isEqual: false para valores diferentes', () => {
+    expect(isEqual(7, 8)).toBe(false);
+  });
+
+  // --- medianaArray: array vazio, desordenado e com tamanho par
+  test('medianaArray: lança erro para array vazio', () => {
+    expect(() => medianaArray([])).toThrow('Array vazio не possui mediana.');
+  });
+  test('medianaArray: ordena numericamente antes de calcular (tamanho ímpar)', () => {
+    expect(medianaArray([5, 1, 3])).toBe(3);
+    expect(medianaArray([10, 9, 1])).toBe(9); // ordenação lexicográfica daria 10
+  });
+  test('medianaArray: tamanho par retorna a média dos dois centrais', () => {
+    expect(medianaArray([1, 2, 3, 4])).toBe(2.5);
+    expect(medianaArray([4, 1, 3, 2])).toBe(2.5);
+  });
+});
+
+describe('Casos de borda adicionais', () => {
+  test('produtoArray: retorna 1 (elemento neutro) para array vazio', () => {
+    expect(produtoArray([])).toBe(1);
+  });
+});
